@@ -1,0 +1,2399 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sign Workbench API",
+    "version": "2.0.0",
+    "description": "Local passport, receipt, customer intake, review, export, signature, and user-authentication API for the Sign workbench."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:3218",
+      "description": "Local workbench server"
+    }
+  ],
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Workbench"
+    },
+    {
+      "name": "Signatures"
+    },
+    {
+      "name": "Review"
+    },
+    {
+      "name": "Export"
+    },
+    {
+      "name": "Customer Library"
+    },
+    {
+      "name": "Training"
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log in with username and password",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OkUser"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Clear the auth cookie",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Read the current authenticated user",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OkUser"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh the auth cookie token",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/OkUser"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Health check",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/api/state": {
+      "get": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Read the full workbench state payload",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatePayload"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/my/todos": {
+      "get": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Role-aware todo list for the authenticated user",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/signature-service/open-browser": {
+      "post": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Open the website signature browser worker",
+        "x-roles": [
+          "admin",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/signature-service/close-browser": {
+      "post": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Close the website signature browser worker",
+        "x-roles": [
+          "admin",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}": {
+      "get": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Read one review batch",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Delete a review batch",
+        "x-roles": [
+          "admin",
+          "finance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/import": {
+      "post": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Import uploaded files into a new review batch",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/MultipartFiles"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/import-ledger": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Import approved customer groups from a review batch into the receipt ledger",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error"
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/manual-receipt": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Create a manual receipt task from an existing task",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TaskPayload"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/original-image": {
+      "get": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "查看原图:回溯客户库切分前完整原图(切片裁掉票面边缘时核对用,只读)",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "原图文件流(image/*)"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}": {
+      "patch": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Update editable task fields and workflow metadata",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TaskPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Delete a task from a batch",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/approve": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Approve all tasks in a customer/source group",
+        "x-roles": [
+          "admin",
+          "finance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/groupKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/settle": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Approve a customer group, post to ledger, run tour match, return per-receipt channel modes",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/groupKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Settle result with per-receipt channel modes"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/confirm-modes": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Confirm the matched channel modes of a settled customer group",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/groupKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirm result with updated settlement status"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/ledger-correction": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Ledger correction: delete a settled group ledger rows (with audit snapshot) and reopen the group (admin only)",
+        "x-roles": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/groupKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "reason"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "description": "订正原因(审计留痕,必填)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Removed ledger rows count and affected workspaces"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/customer": {
+      "delete": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Delete the customer directory linked to a source group",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/groupKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/queue-website-signature": {
+      "post": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Queue website signature generation for one passport task",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TaskPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/queue-website-signatures": {
+      "post": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Queue website signature generation for eligible passport tasks in a batch",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/website-signature": {
+      "delete": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Delete a generated website signature from one task",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TaskPayload"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/manual-signature": {
+      "post": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Save a manually drawn signature for one task",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TaskPayload"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Signatures"
+        ],
+        "summary": "Delete a manual signature from one task",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TaskPayload"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/export": {
+      "post": {
+        "tags": [
+          "Export"
+        ],
+        "summary": "Export approved receipt rows, finalize customer folders, and generate bill templates",
+        "x-roles": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ExportPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/export-customer-data": {
+      "post": {
+        "tags": [
+          "Export"
+        ],
+        "summary": "Export the batch's per-customer image folders as a zip (excludes bill xlsx)",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Zip archive of per-customer image folders",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/state": {
+      "get": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Read customer-library root and workspace state",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          }
+        }
+      }
+    },
+    "/api/customer-library/root": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Set the active customer-library root directory",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces": {
+      "get": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "List customer workspaces",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Create or ensure a customer workspace",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}": {
+      "delete": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Delete a customer workspace",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers": {
+      "get": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "List customers in a workspace",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers/{customerId}": {
+      "delete": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Delete one customer directory from a workspace",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          },
+          {
+            "$ref": "#/components/parameters/customerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers/{customerId}/images/{imageId}/file": {
+      "get": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Download or preview one customer image file",
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          },
+          {
+            "$ref": "#/components/parameters/customerId"
+          },
+          {
+            "$ref": "#/components/parameters/imageId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image binary stream",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers/{customerId}/images/{imageId}/review": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Confirm or reject one customer image after classification review",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          },
+          {
+            "$ref": "#/components/parameters/customerId"
+          },
+          {
+            "$ref": "#/components/parameters/imageId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers/{customerId}/images/{imageId}": {
+      "delete": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Delete one customer image",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          },
+          {
+            "$ref": "#/components/parameters/customerId"
+          },
+          {
+            "$ref": "#/components/parameters/imageId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/preprocess": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Preprocess all customers in a workspace",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers/{customerId}/preprocess": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Preprocess one customer folder",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          },
+          {
+            "$ref": "#/components/parameters/customerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          }
+        }
+      }
+    },
+    "/api/customer-library/workspaces/{workspaceKey}/customers/{customerId}/images/upload": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Append uploaded images to one customer folder",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/workspaceKey"
+          },
+          {
+            "$ref": "#/components/parameters/customerId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/MultipartFiles"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/customers": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Create an empty customer record",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/customers/upload": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Create a customer record with uploaded images",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/MultipartFiles"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CustomerLibraryState"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/import-workspace": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Create a review batch from one customer workspace",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/append-workspace": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Append eligible customers from a workspace to an existing batch",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/append-customer": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Append one selected customer to an existing batch",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/JsonObject"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/batches/{batchId}/group-code": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Replace the group-code table for an existing review batch",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/MultipartFiles"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BatchPayload"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/cleanup/orphans": {
+      "get": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "List orphan customers whose last batch was deleted",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "responses": {
+          "200": {
+            "description": "Orphan customer list"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/customer-library/cleanup/delete": {
+      "post": {
+        "tags": [
+          "Customer Library"
+        ],
+        "summary": "Delete selected orphan customers from the library",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion result"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/requeue": {
+      "post": {
+        "tags": [
+          "Workbench"
+        ],
+        "summary": "Requeue selected tasks for re-recognition (after OCR outage)",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "responses": {
+          "200": {
+            "description": "Requeue result"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/export-hyundai-delivery": {
+      "post": {
+        "tags": [
+          "Export"
+        ],
+        "summary": "Export HYUNDAI delivery zip pooled by type (passports/flights/receipts, receipts named by receipt number)",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Zip archive with passport/flight/receipt pools",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/export-mode-delivery": {
+      "post": {
+        "tags": [
+          "Export"
+        ],
+        "summary": "多模式交付包:济州道辉团号客户夹/现代三池/其他模式各一文件夹/S活动小票双份(zip)",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Zip archive with passport/flight/receipt pools",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/resplit": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Resplit the source original image of a task by (new) store profile (P2d 改店重切)",
+        "description": "按(新)店档案用客户库原图强制重调 qwen 重切;旧派生任务删除进墓碑剔除流程,新切片归回同批次同客户。已审保护:该原图派生任务任一已审→409。仅 qwen 模式(否则 501)。",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "storeFamily": {
+                    "type": "string",
+                    "description": "店家(缺省=任务当前店 Final 优先);normalizeStoreFamily 归一,空=不改店纯重切"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          },
+          "501": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/export-lotte-dept-delivery": {
+      "post": {
+        "tags": [
+          "Export"
+        ],
+        "summary": "Export Lotte department store delivery package (乐天百货交付包)",
+        "description": "门店店名分夹(明洞/蚕室/釜山/仁川,一店两码并一夹)→客户夹(购买日期M.D 空格 英文名)→双图(交易编号图=小票整图+护照.jpg=独立护照图;无独立护照用同框整图兜底不阻断,2026-07-20 拍板)。整组已审才交付;缺交易编号/门店→409 LOTTE_DEPT_DELIVERY_BLOCKED 带 blocked 名单;无票→404;与其他导出共用并发闸(429)。",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ZIP download"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error"
+          },
+          "429": {
+            "$ref": "#/components/responses/Error"
+          },
+          "501": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/tour-candidates": {
+      "get": {
+        "summary": "团号确认站:组级候选聚合(?probe=手填即时查表)",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer",
+          "finance"
+        ]
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/confirm-tour": {
+      "post": {
+        "summary": "团号确认站:人工确认团号(盖章+回填+重跑预匹配)",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/unconfirm-tour": {
+      "post": {
+        "summary": "团号确认站:撤销确认(未结算;slim曾生效强制清reviewed)",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/batches/{batchId}/source-groups/{groupKey}/tour-responded": {
+      "post": {
+        "summary": "团号确认站:回执已发盖 respondedAt",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/tour-prior": {
+      "get": {
+        "summary": "先验:收票员当日已确认团号(候选排序用)",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/sendback-queue": {
+      "get": {
+        "summary": "回发队列列表(发12/17/18号、S活动)",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/sendback-queue/{id}/done": {
+      "post": {
+        "summary": "回发已发盖章",
+        "tags": [
+          "workbench"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/agent-workspace/v1/months": {
+      "get": {
+        "summary": "available data months (agent workspace)",
+        "tags": [
+          "agent-workspace"
+        ],
+        "responses": {
+          "200": {
+            "description": "months list"
+          }
+        }
+      }
+    },
+    "/api/agent-workspace/v1/summary": {
+      "get": {
+        "summary": "workspace summary (visibleAll + selectedAgent)",
+        "tags": [
+          "agent-workspace"
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            },
+            "description": "YYYY-MM"
+          },
+          {
+            "name": "ownerUserId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "admin/finance nolo; reviewer forced own"
+          },
+          {
+            "name": "agentKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "summary"
+          },
+          "400": {
+            "description": "invalid_month"
+          }
+        }
+      }
+    },
+    "/api/agent-workspace/v1/agents": {
+      "get": {
+        "summary": "agents grouped list",
+        "tags": [
+          "agent-workspace"
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            },
+            "description": "YYYY-MM"
+          },
+          {
+            "name": "ownerUserId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "admin/finance nolo; reviewer forced own"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "agents"
+          }
+        }
+      }
+    },
+    "/api/agent-workspace/v1/customers": {
+      "get": {
+        "summary": "customers page (cursor, no offset)",
+        "tags": [
+          "agent-workspace"
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            },
+            "description": "YYYY-MM"
+          },
+          {
+            "name": "ownerUserId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "admin/finance nolo; reviewer forced own"
+          },
+          {
+            "name": "agentKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reviewStatus",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "customers + nextCursor"
+          },
+          "400": {
+            "description": "invalid_month / invalid_review_status"
+          }
+        }
+      }
+    },
+    "/api/agent-workspace/v1/tasks": {
+      "get": {
+        "summary": "workflow tasks (carryover pending from earlier months by default)",
+        "tags": [
+          "agent-workspace"
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}$"
+            },
+            "description": "YYYY-MM"
+          },
+          {
+            "name": "ownerUserId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "admin/finance nolo; reviewer forced own"
+          },
+          {
+            "name": "agentKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "done",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "includeCarryover",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "maximum": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "tasks"
+          }
+        }
+      }
+    },
+    "/api/agent-workspace/v1/tasks/{id}/complete": {
+      "post": {
+        "summary": "complete workflow task (idempotent; finance read-only 403)",
+        "tags": [
+          "agent-workspace"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "note": {
+                    "type": "string"
+                  },
+                  "expectedVersion": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "done (idempotent on repeat)"
+          },
+          "403": {
+            "description": "workspace_read_only / task_forbidden"
+          },
+          "404": {
+            "description": "task_not_found"
+          },
+          "409": {
+            "description": "task_cancelled / task_version_conflict"
+          }
+        }
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/doc-box": {
+      "post": {
+        "summary": "手画文档框:在原图上框出这条任务对应的那张单据,交付时按它裁",
+        "description": "框是原图归一化坐标 [x1,y1,x2,y2]。任务指向切片文件时拒绝(坐标系不同)。框太小(误触)或框住几乎整张图(等于没框)一律拒绝并返回人话理由。",
+        "tags": [
+          "Review"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "box"
+                ],
+                "properties": {
+                  "box": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 4,
+                    "maxItems": 4,
+                    "description": "[x1,y1,x2,y2],0~1 的比例,相对整张原图"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "已保存;返回规整后的框和刷新后的批次"
+          },
+          "400": {
+            "description": "框不合法,或这条任务用的是切片(坐标系对不上)"
+          },
+          "404": {
+            "description": "批次或任务不存在"
+          }
+        },
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ]
+      }
+    },
+    "/api/batches/{batchId}/tasks/{taskId}/reread-box": {
+      "post": {
+        "tags": [
+          "Review"
+        ],
+        "summary": "Re-read receipt fields inside the manually drawn box (P2-b 按框重读)",
+        "description": "拿任务上已保存的人工框(manualBox)裁出原图那一块,聚焦重读票面字段。只写 *Auto(建议值),绝不碰 *Final(人的决定);只写读出来有值的字段,空值不覆盖(一次重读失败不该清掉上一轮读对的)。读不出返回 200 + updated:false + reason,不是错误 —— 框太小/未配 key/网络抖都走这条。OCR 在批次写锁之外,只有写字段那几行在锁内。",
+        "x-roles": [
+          "admin",
+          "reviewer"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/batchId"
+          },
+          {
+            "$ref": "#/components/parameters/taskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token",
+        "description": "HttpOnly JWT cookie set by /api/auth/login."
+      }
+    },
+    "parameters": {
+      "batchId": {
+        "name": "batchId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "taskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "groupKey": {
+        "name": "groupKey",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "workspaceKey": {
+        "name": "workspaceKey",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "customerId": {
+        "name": "customerId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "imageId": {
+        "name": "imageId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "requestBodies": {
+      "JsonObject": {
+        "required": false,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "MultipartFiles": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "manifest": {
+                  "type": "string",
+                  "description": "Optional JSON manifest preserving browser folder-relative paths."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "Ok": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Ok"
+            }
+          }
+        }
+      },
+      "OkUser": {
+        "description": "Authenticated user response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      },
+      "StatePayload": {
+        "description": "Workbench state payload",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "batches": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Batch"
+                  }
+                },
+                "currentBatch": {
+                  "$ref": "#/components/schemas/Batch"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BatchPayload": {
+        "description": "Batch or batch-action response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "batch": {
+                  "$ref": "#/components/schemas/Batch"
+                },
+                "batchId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TaskPayload": {
+        "description": "Task mutation response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "task": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CustomerLibraryState": {
+        "description": "Customer-library state or mutation response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "activeRoot": {
+                  "type": "string"
+                },
+                "workspaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                },
+                "customers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ExportPayload": {
+        "description": "Export response with local artifact URLs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "csvUrl": {
+                  "type": "string"
+                },
+                "xlsxUrl": {
+                  "type": "string"
+                },
+                "summaryUrl": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "description": "Error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Ok": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "reviewer",
+              "finance"
+            ]
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "integer"
+          }
+        }
+      },
+      "Batch": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            }
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "batchId": {
+            "type": "string"
+          },
+          "docType": {
+            "type": "string",
+            "enum": [
+              "passport",
+              "receipt",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "workflow": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "workspaceKey": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "intake",
+  "version": "0.1.0",
+  "description": "收票中台 — 微信免税小票/护照智能采集归组，喂给 sign 对账",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "phase0": "node --env-file=.env scripts/run-phase0-validation.js",
+    "lint": "eslint .",
+    "format:check": "prettier . --check"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0",
+    "dotenv": "^17.4.2",
+    "exceljs": "^4.4.0",
+    "pino": "^10.3.1",
+    "sharp": "^0.34.5"
+  },
+  "license": "ISC"
+}

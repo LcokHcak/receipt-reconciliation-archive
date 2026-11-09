@@ -1,0 +1,95 @@
+Global:
+  use_gpu: False
+  epoch_num: 25
+  log_smooth_window: 20
+  print_batch_step: 10
+  save_model_dir: 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/training/output/passport_rec_cpu'
+  save_epoch_step: 5
+  eval_batch_step: [0, 25]
+  cal_metric_during_train: True
+  pretrained_model:
+  checkpoints:
+  use_visualdl: False
+  character_dict_path: 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/.venv/Lib/site-packages/paddleocr/ppocr/utils/ppocr_keys_v1.txt'
+  max_text_length: 64
+  infer_mode: False
+  use_space_char: True
+  save_res_path: 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/training/output/passport_rec_cpu/predicts.txt'
+
+Optimizer:
+  name: Adam
+  beta1: 0.9
+  beta2: 0.999
+  lr:
+    learning_rate: 0.0005
+  regularizer:
+    name: 'L2'
+    factor: 0.0
+
+Architecture:
+  model_type: rec
+  algorithm: CRNN
+  Transform:
+  Backbone:
+    name: MobileNetV3
+    scale: 0.5
+    model_name: small
+  Neck:
+    name: SequenceEncoder
+    encoder_type: rnn
+    hidden_size: 48
+  Head:
+    name: CTCHead
+    fc_decay: 0.00004
+
+Loss:
+  name: CTCLoss
+
+PostProcess:
+  name: CTCLabelDecode
+
+Metric:
+  name: RecMetric
+  main_indicator: acc
+
+Train:
+  dataset:
+    name: SimpleDataSet
+    data_dir: 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/training/data/passport_rec_dataset'
+    label_file_list:
+      - 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/training/data/passport_rec_dataset/train.txt'
+    transforms:
+      - DecodeImage:
+          img_mode: BGR
+          channel_first: False
+      - CTCLabelEncode:
+      - RecResizeImg:
+          image_shape: [3, 48, 320]
+      - KeepKeys:
+          keep_keys: ['image', 'label', 'length']
+  loader:
+    shuffle: True
+    batch_size_per_card: 16
+    drop_last: False
+    num_workers: 0
+
+Eval:
+  dataset:
+    name: SimpleDataSet
+    data_dir: 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/training/data/passport_rec_dataset'
+    label_file_list:
+      - 'D:/JIN HAIMIN/self/ticket/sign/paddleocr_standalone/training/data/passport_rec_dataset/val.txt'
+    transforms:
+      - DecodeImage:
+          img_mode: BGR
+          channel_first: False
+      - CTCLabelEncode:
+      - RecResizeImg:
+          image_shape: [3, 48, 320]
+      - KeepKeys:
+          keep_keys: ['image', 'label', 'length']
+  loader:
+    shuffle: False
+    drop_last: False
+    batch_size_per_card: 16
+    num_workers: 0

@@ -1,0 +1,34 @@
+Receipt Assistant 收款凭证助手
+最终交付清单
+日期：2026-06-09
+
+程序文件：
+- main.py
+- index.html
+- upload.html
+- requirements.txt
+- config.json
+- start.bat
+- install_env.bat
+
+说明文件：
+- README.txt
+- README_DEPLOY.md
+- DELIVERY_CHECK_REPORT.txt
+- DELIVERY_MANIFEST.txt
+
+运行目录：
+- originals
+- uploads
+- completed
+- logs
+- debug
+
+离线依赖：
+- wheels（64 位 Python 3.10）
+
+管理报告：
+- logs/reports/项目成果分析报告.md
+- logs/reports/项目成果分析报告.docx
+- logs/reports/项目交付总结.txt
+

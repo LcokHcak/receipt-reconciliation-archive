@@ -1,0 +1,60 @@
+Receipt Assistant 最终交付检查报告
+检查日期：2026-06-09
+
+一、代码检查
+
+1. main.py 通过 Python 语法编译检查。
+2. index.html 内嵌 JavaScript 通过语法解析。
+3. 前端异常、文件名核验、结果浏览样例状态流测试通过。
+
+二、运行检查
+
+1. 在包含中文和空格的路径中启动成功。
+2. 本地服务可访问。
+3. OCR 状态为 enabled=true、ready=true。
+4. Edge Chromium 页面加载成功。
+5. 服务运行不依赖 VS Code、Codex、Claude Code、数据库或外网。
+
+三、接口检查
+
+1. /api/upload 缺少文件时返回 HTTP 400 + application/json。
+2. /api/upload 上传成功时返回 ok=true 的 JSON。
+3. /api/status、/api/tasks、/api/exceptions 返回 JSON。
+
+四、历史问题回归检查
+
+1. OCR 失败任务状态为 failed + pending + ocr_failed。
+2. 异常统计与异常列表数量一致。
+3. 异常任务未进入文件名核验和结果浏览。
+4. uploads 根目录原图保留，pending 中仅创建工作副本。
+5. 清空工作台后任务列表为空。
+6. 清空工作台后 completed 测试文件仍存在。
+7. start.bat 在端口 8888 被占用时显示明确提示。
+
+五、兼容检查
+
+1. 64 位 Python 3.10 离线 wheels 安装及依赖导入通过。
+2. 中文路径通过。
+3. 空格路径通过。
+4. 相对路径配置通过。
+5. Edge Chromium 通过；Chrome 使用相同 Chromium 标准。
+
+六、打包排除
+
+未包含：
+
+- .git
+- .venv
+- __pycache__
+- .pytest_cache
+- *.pyc
+- *.pyo
+- *.tmp
+- *.bak
+- 调试图片
+- 测试图片
+- 旧压缩包
+- 开发日志
+- 旧发布目录
+- Codex/Claude 临时文件
+

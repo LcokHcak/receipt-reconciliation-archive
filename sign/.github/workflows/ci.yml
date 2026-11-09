@@ -1,0 +1,68 @@
+name: CI
+
+# push 到主干/工作分支 + 所有 PR 都跑;PR 红了就不该合(配合分支保护)。
+on:
+  push:
+    branches: [main, refactor-2026-05-vue3]
+  pull_request:
+
+# 同一分支新 push 取消上一次未跑完的,省额度
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 22 对齐生产服务器(node:sqlite 需 22+;engines >=22.5.0)
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install backend deps
+        run: npm ci
+
+      - name: Lint (0 error 即通过)
+        run: npm run lint
+
+      # 前端构建挪到 npm test **之前**(2026-08-01)。
+      # 原因:tests/frontend_design_hard_rules.test.js 有一条硬闸扫**构建产物**的 CSS
+      # (「绿色整套删掉」,靠它 0731 抓到过 .bg-emerald-500 残留),
+      # 而它在 dist 不存在时会 t.skip。dist 被 .gitignore 忽略、0 个跟踪文件,
+      # 构建又排在测试之后 —— 于是这条闸在 CI 上**每次都跳过**,只有本机(有历史产物)才真跑。
+      # 那条用例的注释自己写着「静默跳过和假绿是一回事」,说的就是这个。
+      # 换顺序零成本:构建本来也要跑,只是提前。
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+
+      - name: Frontend build
+        run: npm run build
+        working-directory: frontend
+
+      - name: Test (node --test, 全量)
+        run: npm test
+
+      # e2e 接进 CI(2026-08-01)。此前它是一道**存在但从不触发**的闸:
+      #   · package.json 里没有入口脚本(今天上午补的 test:e2e);
+      #   · playwright 与 @playwright/test 版本劈叉 → 整套一条都跑不起来(今天上午对齐到 1.60);
+      #   · playwright.config 的 webServer 命令写死 `npm.cmd` —— **Windows 专有**,
+      #     Linux 上根本没这个命令,所以就算接进来也起不来(这一笔修的)。
+      # 三层挡着,13 条用例本地全过、看着像有闸,实际没有任何自动化在跑它。
+      #
+      # PLAYWRIGHT_CHANNEL='' = 不指定 channel,用 playwright 自带的 chromium
+      # (开发机默认走系统 Chrome;CI 上没有)。两条路本地都实跑过。
+      - name: Install chromium for e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E (playwright, 13 条)
+        run: npm run test:e2e
+        env:
+          PLAYWRIGHT_CHANNEL: ''
+          CI: 'true'

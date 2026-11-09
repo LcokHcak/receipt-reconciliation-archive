@@ -1,0 +1,308 @@
+[
+  {
+    "id": "A1",
+    "name": "不存在 workspace 上传",
+    "verdict": "FAIL",
+    "note": "status=400: {\"error\":\"month out of range\"}"
+  },
+  {
+    "id": "A2",
+    "name": "跨月账单 xlsx 内 purchase_date 分流",
+    "verdict": "CONFIRM",
+    "note": "sample 117968 行 100% 在 2026-01。生产可能跨月,后端目前不拆;需用户确认是否要 import_service 改\"按月拆\""
+  },
+  {
+    "id": "A3",
+    "name": "sample(1月) 导入 1月 workspace 是否能对齐",
+    "verdict": "PASS",
+    "note": "只要 workspaceKey 与 xlsx purchase_date 月份匹配,统计正确"
+  },
+  {
+    "id": "A4",
+    "name": "业务月份 ISO YYYY-MM 命名",
+    "verdict": "PASS",
+    "note": "所有 workspace key 都是 ISO 格式 (1 个)"
+  },
+  {
+    "id": "A5",
+    "name": "重复导入 row_hash 去重",
+    "verdict": "PASS",
+    "note": "首次 insert 9868, 二次 skip 9869"
+  },
+  {
+    "id": "B1",
+    "name": "v2 ImportsView 是否支持多文件批量上传",
+    "verdict": "CONFIRM",
+    "note": "FileDropzone 当前单文件; 5 个 tile 各自独立可并行触发,但同一 tile 不能多文件队列。需用户确认是否要扩展"
+  },
+  {
+    "id": "B2",
+    "name": "账单 mode_folder 自动识别",
+    "verdict": "CONFIRM",
+    "note": "上传成功 50821ms inserted=117968. mode_folder 在 daily_receipt_export 是 null (需 merge 阶段配模式归类后才有)"
+  },
+  {
+    "id": "B3",
+    "name": "上传顺序对结果是否敏感",
+    "verdict": "PASS",
+    "note": "后端 stage_job 显式串行;import 之间各表独立无 race"
+  },
+  {
+    "id": "B4",
+    "name": "导入后立刻看 命中率/对账",
+    "verdict": "FAIL",
+    "note": "当前 v2 没有\"账单团号 vs 团号表 命中率\"统计页。bills=117968 groups=9868"
+  },
+  {
+    "id": "B5",
+    "name": "xlsx 列名缺失/不匹配的报错文案",
+    "verdict": "CONFIRM",
+    "note": "后端有 importValidationService 但需要造个 broken xlsx 才能测;暂留"
+  },
+  {
+    "id": "C1",
+    "name": "团号匹配命中率失败清单",
+    "verdict": "FAIL",
+    "note": "tour-match 跑完后没有\"未命中清单\"端点。当前只能从 errors / pending_review 间接看;需要新增 GET /tour-match/unmatched 端点"
+  },
+  {
+    "id": "C2",
+    "name": "团号 normalize 比较",
+    "verdict": "CONFIRM",
+    "note": "后端 tour_match_service 默认 trim+exact equal;无前缀 normalize。账单 25102626 vs 团号表 T25102626 必 miss。建议加 normalize"
+  },
+  {
+    "id": "C3",
+    "name": "团号位数 cross-check (LOTTE=8 / SHILLA=5)",
+    "verdict": "PASS",
+    "note": "cross-check 跑通,GC_TOUR_LEN open=0"
+  },
+  {
+    "id": "C4",
+    "name": "团号匹配传播策略",
+    "verdict": "CONFIRM",
+    "note": "需读 tour_match_service 代码确认是 \"整团 join\" 还是 \"客人逐条 join\""
+  },
+  {
+    "id": "C5",
+    "name": "pending_review.ambiguous_match 详情显示",
+    "verdict": "FAIL",
+    "note": "v2 PendingReviewsView 仅显示 sourceTable+id+reasonType,没显示 conflict 详情 (detail JSON 折叠隐藏)"
+  },
+  {
+    "id": "D1",
+    "name": "v2 BillsView 显示 bill_match_priority 列",
+    "verdict": "FAIL",
+    "note": "BillsView columns 没有 priority 列;LedgerView 也没有。需补"
+  },
+  {
+    "id": "D2",
+    "name": "一票多商品 (一对多 bill_match)",
+    "verdict": "CONFIRM",
+    "note": "bill_match_log 表是 1:1,但一票多 SKU 时账单会拆多行。LedgerView 一行 daily 对应多行 bill 时,关联怎么看? 需 UI 设计"
+  },
+  {
+    "id": "D3",
+    "name": "品牌活动数据.xlsx 特殊账单匹配",
+    "verdict": "CONFIRM",
+    "note": "docx 写\"品牌活动数据 对了釜山部分,其他都对应乐天首尔\" — 这是业务规则不是字段,系统当前没区分逻辑。需用户确认要不要硬编码这条规则"
+  },
+  {
+    "id": "D4",
+    "name": "bill_match 金额容差",
+    "verdict": "PASS",
+    "note": "bill_match 当前按 6 优先级(receipt_no/passport+date/...)不强依赖金额;金额冲突进 pending_review,不会自动 drop"
+  },
+  {
+    "id": "D5",
+    "name": "second_pass 后看补回清单",
+    "verdict": "CONFIRM",
+    "note": "second_pass API 已有,但没有\"我刚补回 N 条\"的端点;v2 MonthlyDataView 可看 is_unmatched=1 行,但需要额外字段 second_pass_added_at"
+  },
+  {
+    "id": "E1",
+    "name": "同护照不同姓名 → field_conflict",
+    "verdict": "CONFIRM",
+    "note": "需造 2 条数据测;后端 bill_match 应该会触发 ambiguous_match,但 field_conflict 是 cross_check 范畴"
+  },
+  {
+    "id": "E2",
+    "name": "出生日期冲突 → ConflictsView 3-pane",
+    "verdict": "PASS",
+    "note": "ConflictsView 3-pane diff UI 已实现 (D2 实现);decisionFromPayload 支持 use_daily/use_bill/manual"
+  },
+  {
+    "id": "E3",
+    "name": "manual_locked_fields 在 stage 重跑时保护",
+    "verdict": "PASS",
+    "note": "B3 已实现;daily_receipt_repository.runDynamicUpdate filterStageUpdates 走 manual_locked 检查"
+  },
+  {
+    "id": "E4",
+    "name": "中英文姓名混合规范化",
+    "verdict": "CONFIRM",
+    "note": "现规则只校验长度+字符集,没有\"两边都规范化后比\"。需用户确认是否要 fuzzy compare"
+  },
+  {
+    "id": "E5",
+    "name": "日期格式 normalize",
+    "verdict": "CONFIRM",
+    "note": "OCR 入库时按 YYYY-MM-DD 规则校验 (field_purchase_date_invalid),不符合则 reject。但导入 xlsx 时格式是 Date object 直接存,无 normalize"
+  },
+  {
+    "id": "F1",
+    "name": "merge 前置检查",
+    "verdict": "FAIL",
+    "note": "status=409 {\"error\":\"先运行账单匹配，再合并月度数据\",\"code\":\"STAGE_PRECONDITION_FAILED\"}"
+  },
+  {
+    "id": "F1b",
+    "name": "MonthlyV2View merge 按钮 disabled when not confirmed",
+    "verdict": "FAIL",
+    "note": "handleStage 没查 deduct/mode confirm 状态,用户点了再报 400; UX 不友好"
+  },
+  {
+    "id": "F2",
+    "name": "账单导入后 unmapped mode_raw 数量",
+    "verdict": "PASS",
+    "note": "unmapped=0: "
+  },
+  {
+    "id": "F3",
+    "name": "复制上月-上月不存在",
+    "verdict": "PASS",
+    "note": "status=200 {\"workspaceKey\":\"demo-2099-12\",\"isTestMode\":true,\"confirmed_at\":null,\"rows\":[{\"mode_folder\":\"乐天首尔\",\""
+  },
+  {
+    "id": "F4",
+    "name": "deduct_value 0~1 验证提示",
+    "verdict": "CONFIRM",
+    "note": "SetupView Input type=number step=0.001 min=0 max=1;但浏览器不一定强校;后端有 deduct_value Number.toFixed(4),用户填 5 后端会接受。需加严"
+  },
+  {
+    "id": "F5",
+    "name": "mode_folder 4 个枚举 hard-code",
+    "verdict": "PASS",
+    "note": "业务规则就 4 个 (docx + 规则表确认);新增需求要先改 docx 业务约定再改代码,正常"
+  },
+  {
+    "id": "G1",
+    "name": "LedgerView 主表显示\"现在能做什么\"提示",
+    "verdict": "FAIL",
+    "note": "状态切换全在编辑 Drawer 里,主表上只有 status badge。建议每行 status 后面加 \"可执行 →\" 单按钮"
+  },
+  {
+    "id": "G2",
+    "name": "冲突→解决→入月链条步数",
+    "verdict": "PASS",
+    "note": "conflict resolve → status 自动转;ready_to_post 行可一键 publish。步数合理 (≤3 步)"
+  },
+  {
+    "id": "G3",
+    "name": "admin 解锁 API",
+    "verdict": "FAIL",
+    "note": "后端无 /unlock 端点。锁了就死锁,需 admin SQL 才能解"
+  },
+  {
+    "id": "G4",
+    "name": "并发 stage 锁定提示",
+    "verdict": "PASS",
+    "note": "pipeline_lock 端可正确返 423 PIPELINE_LOCKED;v2 decodeError 已显示 runningStage"
+  },
+  {
+    "id": "G5",
+    "name": "健康检查 critical 引导动作",
+    "verdict": "FAIL",
+    "note": "WorkspaceSetupView 显示 issue + severity + suggestion 文字,但没\"一键去清理\"action button"
+  },
+  {
+    "id": "H1",
+    "name": "客户组跨月时审核台 UI 提示",
+    "verdict": "CONFIRM",
+    "note": "审核台属 v1 保留页 (CustomerLibraryView/ReviewView), 不动. 桥接拆月对操作员透明,无 UI 提示"
+  },
+  {
+    "id": "H2",
+    "name": "改 purchase_date 自动迁移后 UX",
+    "verdict": "CONFIRM",
+    "note": "B1.2 后端已自动迁移,但 v2 LedgerView 没 toast \"已搬到 2026-XX\"提示"
+  },
+  {
+    "id": "H3",
+    "name": "系统导出 vs sample √ 文件对照",
+    "verdict": "CONFIRM",
+    "note": "sample √ 文件存在=true;需手工 diff 字段值 (此 audit 脚本不做)"
+  },
+  {
+    "id": "H4",
+    "name": "跨月迁移后历史溯源",
+    "verdict": "PASS",
+    "note": "daily_field_history 表跨月保留;RowHistoryDrawer 可查"
+  },
+  {
+    "id": "H5",
+    "name": "demo- 前缀跨月保留",
+    "verdict": "PASS",
+    "note": "B1.2 workspace_resolver 已实现 demoPrefix propagation;G2 SetupView E2E 验过"
+  },
+  {
+    "id": "I1",
+    "name": "orphan 评分阈值 0.3 合理性",
+    "verdict": "CONFIRM",
+    "note": "当前 orphans/bills 返回 3 条;需 sample 跑过完整 stage 后再评"
+  },
+  {
+    "id": "I2",
+    "name": "/imports/missing → MissingView 显示",
+    "verdict": "PASS",
+    "note": "F9a MissingView 已对接;status 过滤 pending/filled/resolved"
+  },
+  {
+    "id": "I3",
+    "name": "RemedyView 选错 mode 撤销",
+    "verdict": "FAIL",
+    "note": "RemedyView 转 ready_to_post 后 LedgerView 看不到撤销按钮;只能去 LedgerView 编辑改 modeRaw 再点状态"
+  },
+  {
+    "id": "I4",
+    "name": "Badcase verdict=wrong_match 导出 csv",
+    "verdict": "FAIL",
+    "note": "BadcaseView 没有\"导出 wrong_match\"按钮;后端 fetchBadcases 支持 verdict 筛选但无 csv 端点"
+  },
+  {
+    "id": "I5",
+    "name": "departure-sync + audit",
+    "verdict": "PASS",
+    "note": "rewritten=0, audit 表 ErrorsView 可看"
+  },
+  {
+    "id": "J1",
+    "name": "ledger 100 行/页 后端响应",
+    "verdict": "PASS",
+    "note": "6ms (阈值 500ms)"
+  },
+  {
+    "id": "J2",
+    "name": "10000 行渲染压测",
+    "verdict": "CONFIRM",
+    "note": "后端 G7 验过 12.8s;前端 vue render 100 行/页所以渲染不会卡,但翻多次页累积 fetch 时间未测"
+  },
+  {
+    "id": "J3",
+    "name": "多 tab 实时刷新",
+    "verdict": "FAIL",
+    "note": "当前没 WebSocket / SSE,跨 tab 改字段对方需手动刷新"
+  },
+  {
+    "id": "J4",
+    "name": "sidebar 19+ 项 是否过长",
+    "verdict": "CONFIRM",
+    "note": "目前一屏可容纳 (1080p);Pad 横屏 OK;手机会很挤"
+  },
+  {
+    "id": "J5",
+    "name": "移动端 responsive",
+    "verdict": "CONFIRM",
+    "note": "AppSidebar 有 768px breakpoint 隐藏侧栏,但 SetupView/LedgerView 大表格在手机上会横向溢出"
+  }
+]

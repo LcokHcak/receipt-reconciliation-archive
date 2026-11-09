@@ -1,0 +1,6 @@
+# git blame 忽略清单:纯格式化提交,考古时跳过
+# 用法:git blame --ignore-revs-file .git-blame-ignore-revs <file>
+# 或一次性配置:git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# 2026-07-28 eslint --fix 全量模板格式化(357 条缩进/换行,16 个 .vue,零逻辑)
+bb10ded61d8733d876b31584b9213e17af4c0a5e

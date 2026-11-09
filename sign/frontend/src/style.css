@@ -1,0 +1,1646 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #13213a;
+  background: #eef2f6;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  font-synthesis: none;
+  line-height: 1.45;
+  text-rendering: optimizeLegibility;
+  --bg: #eef2f6;
+  --surface: #ffffff;
+  --surface-soft: #f7f9fc;
+  --line: #d8e0eb;
+  --line-strong: #bcc9da;
+  --text: #13213a;
+  --muted: #61708a;
+  --accent: #1863c6;
+  --accent-weak: #e7f0ff;
+  --success: #475569; /* 0728 硬规则:绿色整套删掉,"正常"走灰阶(原绿 #147a4b) */
+  --warning: #9a650c;
+  --danger: #ba3434;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: #18243a;
+  color: #fff;
+  padding: 18px 14px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #263653;
+  display: grid;
+  gap: 8px;
+}
+
+.user-badge {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #10192b;
+  color: #d9e3f2;
+  font-size: 13px;
+}
+
+.user-role {
+  color: #89a1c7;
+  font-size: 11px;
+  font-weight: 400; /* 硬规则:侧边栏降回 400 */
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 6px;
+  background: #f0b94a;
+  color: #172035;
+  font-weight: 500;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand small {
+  color: #b8c3d4;
+  font-size: 12px;
+}
+
+.nav-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 22px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  color: #dce5f2;
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.nav-link:hover {
+  background: #1f2c45;
+}
+
+.nav-link.router-link-active {
+  background: #263653;
+  color: #fff;
+}
+
+.nav-icon {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: #89a1c7;
+  font-size: 14px;
+  font-weight: 400; /* 硬规则:侧边栏降回 400 */
+}
+
+.nav-link.router-link-active .nav-icon {
+  color: #f0b94a;
+}
+
+/* 0728 导航归组:分隔线 + 缩进子项(子项无图标,字小一号色淡一级) */
+.nav-divider {
+  height: 1px;
+  background: #263653;
+  margin: 10px 4px;
+}
+
+.nav-link.nav-child {
+  padding: 6px 12px 6px 42px;
+  font-size: 13px;
+  color: #b8c3d4;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab-button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab-button:hover {
+  color: var(--text);
+}
+
+.tab-button.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.workspace {
+  min-width: 0;
+  padding: 18px 22px 28px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  margin: -18px -22px 18px;
+  min-height: 74px;
+  padding: 14px 22px;
+  background: var(--surface);
+}
+
+/* 硬规则「两级制:400 常规 / 500 强调,不用 700」的**兜底**。
+   0731 实测发现的盲区:全站 CSS 里 font-weight:700 出现 0 次,看着像执行到位了,
+   但 <b>/<strong> 全站 121 处、浏览器默认就给 700 —— 审核台一页 32 个里 31 个是 700。
+   逐个选择器压是压不住语义标签默认值的,必须在这儿兜一道。
+   要更粗只能靠 500(两级制只有两级),想强调更多请换颜色或字号,不要加粗档。 */
+b,
+strong {
+  font-weight: 500;
+}
+
+.topbar h1,
+.page-title h1 {
+  margin: 0;
+  font-weight: 500; /* 硬规则:两级制,标题=强调级 */
+  color: var(--text);
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.page-title {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.page-ledger-button {
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.page-title p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.workbench-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 22px 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #18243a 0%, #263653 100%);
+  color: #fff;
+}
+
+.workbench-hero .eyebrow {
+  margin: 0 0 6px;
+  color: #f0b94a;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workbench-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.workbench-hero .muted {
+  margin-top: 6px;
+  color: #b8c3d4;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.link-like {
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.step-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.step-item {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  text-align: left;
+  font: inherit;
+  color: var(--muted);
+  transition: all 0.15s ease;
+}
+
+.step-item:hover {
+  border-color: var(--line-strong);
+}
+
+.step-item.active {
+  border-color: var(--accent);
+  background: var(--accent-weak);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.step-item strong {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.step-item span {
+  font-size: 12px;
+}
+
+.workspace-bar {
+  margin-bottom: 14px;
+}
+
+.workspace-bar-body {
+  padding: 12px 14px;
+}
+
+.workspace-select-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) auto auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.workspace-select-row select,
+.workspace-select-row input {
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--text);
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
+}
+
+.panel-body {
+  padding: 14px;
+}
+
+.grid-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metric {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 14px;
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  font-weight: 400; /* 硬规则:表头降回 400 */
+  background: var(--surface-soft);
+  color: #32415a;
+  font-size: 12px;
+}
+
+.table tbody tr {
+  cursor: pointer;
+}
+
+.table tbody tr.active td {
+  background: var(--accent-weak);
+}
+
+/* 状态胶囊基色=灰阶(0728 生产实拍抓违规:「未导出」蓝底蓝字——硬规则蓝只给
+   可点击,状态是数据不是链接;绿删后 success 底色也不再带薄荷绿) */
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status.success {
+  background: #f1f5f9;
+  color: var(--success);
+}
+
+.status.warning {
+  background: #fff4dd;
+  color: var(--warning);
+}
+
+.status.danger {
+  background: #ffe9e9;
+  color: var(--danger);
+}
+
+/* 硬规则「胶囊只作状态」——数量不是状态。
+   0731 实测:.status 被数量和状态混着用,首页一屏上「3」「116」「0」「1 人」
+   全是胶囊,和真状态(「未导出」「已完成」)长得一模一样。胶囊天生抢眼,
+   每个数字都做成胶囊,等于每个数字都在喊,真状态反而淹了。
+   数量改用这个类:朴素文字,**保留颜色**(待办>0 仍是琥珀,那是「要处理」),
+   只去掉胶囊的底和圆角。信号不丢,音量降下来。 */
+.count {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  font-variant-numeric: tabular-nums;
+}
+
+.count.warning { color: var(--warning); }
+.count.danger { color: var(--danger); }
+
+.readiness-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.readiness-card {
+  display: grid;
+  gap: 4px;
+  min-height: 72px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--surface-soft);
+}
+
+.readiness-card strong {
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.customer-status-table th,
+.customer-status-table td {
+  white-space: nowrap;
+}
+
+.customer-status-table td:first-child {
+  min-width: 180px;
+  white-space: normal;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.field input,
+.field select {
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(24, 99, 198, 0.14);
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 12px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  padding: 8px 10px;
+  background: #fff6f6;
+  border: 1px solid #efb7b7;
+  border-radius: 6px;
+  display: block;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.danger-text {
+  color: var(--danger);
+}
+
+.primary-button,
+.ghost-button,
+.danger-button,
+.danger-ghost-button {
+  min-height: 36px;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-weight: 500;
+}
+
+.primary-button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.ghost-button {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--text);
+}
+
+/* 描边蓝(0728 image61 设计语言):次级导出动作——每屏只留一个实心彩色按钮,
+   其余可点导出用蓝描边表达"可用但非首要"。 */
+.outline-primary {
+  min-height: 36px;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-weight: 500;
+  border: 1px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+}
+.outline-primary:hover { background: #eff6ff; }
+.outline-primary:disabled { opacity: 0.5; }
+
+.danger-button {
+  border: 1px solid #efb7b7;
+  background: #fff7f7;
+  color: var(--danger);
+}
+
+.danger-ghost-button {
+  border: 1px solid #efb7b7;
+  background: #fff;
+  color: var(--danger);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.split-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(360px, 1.1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+  align-items: start;
+}
+
+.split-layout > .queue-panel {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.split-layout > .review-detail-stack {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px;
+}
+
+.review-console-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(420px, 1fr) 380px;
+  gap: 10px;
+  height: calc(100vh - 96px);
+  min-height: 0;
+  margin-bottom: 14px;
+  align-items: stretch;
+}
+
+.review-queue-panel {
+  height: calc(100vh - 96px);
+  max-height: calc(100vh - 96px);
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* 中栏容器(0730):交付判定提示条 + 图片查看器。
+   ⚠️ 三栏 grid 是 280px/1fr/380px 写死的 —— 中栏只能有**一个** grid item,
+   否则多出来的会占掉第 4 列、把右侧检查器挤出网格(生产截图实证:字段栏整块消失)。 */
+.review-image-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: calc(100vh - 96px);
+  min-height: 0;
+  min-width: 0;
+}
+.review-image-col > .delivery-plan-bar { flex: none; }
+/* 在 flex 列里不能再用 100vh 定高,否则加上提示条就溢出 */
+.review-image-col > .review-image-panel { flex: 1; min-height: 0; height: auto; }
+
+.review-image-panel {
+  height: calc(100vh - 96px);
+  min-height: 0;
+}
+
+/* flex 列(2026-07-28 用户截图:批次审完时「完成卡」飘在面板正中、任务详情缩到底部)。
+   旧 grid 只定义了一行 minmax(0,1fr)——按"只有字段面板一个孩子"写的;完成卡插进来后
+   落在 1fr 行里被垂直居中,下面的字段面板挤成隐式行。flex:完成卡 none、字段面板 1。 */
+.review-inspector {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 96px);
+  max-height: calc(100vh - 96px);
+  min-height: 0;
+  min-width: 0;
+}
+.review-inspector > .review-complete-inline { flex: none; }
+.review-inspector > .review-field-panel { flex: 1; min-height: 0; }
+
+.review-field-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  overflow: visible;
+}
+
+/* (旧 review-complete-panel 满屏居中类 2026-07-28 随完成卡改版退役,死规则已清) */
+
+/* 批次完成卡(2026-07-28 用户截图整改):审完是正经界面状态。
+   头行=✓态标+标题+三桶数字;动作行=需重拍联动+主CTA 靠右。 */
+.review-complete-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  gap: 6px 12px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--success, var(--line));
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+/* 文案(本批次已处理完 + 总文件…)挤在左侧;按钮被 space-between 推到右侧 */
+/* 完成卡两行结构(2026-07-28):头行=✓态标+标题+三桶数字,动作行=需重拍联动+主CTA靠右 */
+.review-complete-inline strong { flex: 0 0 auto; }
+.review-complete-inline .rc-head { display: flex; align-items: center; gap: 7px; flex: 1 1 100%; min-width: 0; }
+.review-complete-inline .rc-check {
+  width: 20px; height: 20px; border-radius: 50%; background: #f1f5f9; color: #475569;
+  font-weight: 500; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; flex: none;
+}
+.review-complete-inline .rc-nums { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.review-complete-inline .rc-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+.review-complete-inline strong {
+  font-size: 14px;
+}
+
+.review-complete-inline p {
+  max-width: none;
+  margin: 0;
+  font-size: 12px;
+}
+
+.review-complete-inline .primary-button {
+  white-space: nowrap;
+}
+
+/* 横向 14px 与 .panel-header / .flow-review-bar 同源(image84:原图/待处理/文件类型
+   三行左缘同一条线)。竖向仍 12px。上一版横向 12px,比头部窄 2px——单看不明显,
+   但和「卡边」那行一起看,面板里就有了三种左缘。 */
+.review-field-scroll {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 14px;
+}
+
+.review-field-scroll .form-grid {
+  grid-template-columns: 1fr;
+}
+
+.review-action-dock {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding: 10px;
+  background: var(--surface);
+}
+
+.review-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inspector-title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.inspector-title strong,
+.inspector-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  color: var(--muted);
+  padding: 24px;
+  text-align: center;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.notice-panel {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: var(--surface);
+}
+
+/* 错误横幅带定位信息时,文字本体也可点(用户直觉是点提示跳转,不只是右侧小按钮) */
+.error-text-locatable {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.locate-error-link {
+  flex: 0 0 auto;
+  margin-left: 10px;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent, #2563eb);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.locate-error-link:hover { opacity: 0.78; }
+
+/* 重复建档红条上的「删除这组重复客户」直删按钮(destructive,红底) */
+.dup-delete-btn {
+  flex: 0 0 auto;
+  margin-left: 10px;
+  border: 1px solid #b42318;
+  background: #b42318;
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dup-delete-btn:hover { background: #971b12; }
+.dup-delete-btn:disabled { opacity: 0.6; cursor: wait; }
+
+.preprocess-progress-card {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 12px;
+}
+
+.preprocess-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.preprocess-progress-head > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* 上传进度条。硬规则「蓝只给可点击」:进度条既不可点、也不是「要处理」,
+   按三色语义归灰阶。灰阶是**一个阶**不是一个灰 —— 轨用浅灰、填充用中灰,
+   对比度反而比原来的蓝填充压浅蓝轨更高。 */
+.preprocess-progress-track {
+  width: 100%;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.preprocess-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #64748b;
+  transition: width 0.25s ease;
+}
+
+.preprocess-progress-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 进度压成一行(2026-07-27 设计整改):去掉边框/浅绿底,省下约 60px 高度,
+   让下面的免税店整行露出来、不用滚。
+   ⚠️横向内边距不能省(2026-07-29 用户报「卡边」,image84 对照):这行是
+   .review-field-panel 的**直接网格子项**,而 .panel 自己不带 padding —— 上一版连
+   横向 padding 一起清成 0,「待处理 N」左缘和右侧 done/total 就直接压在面板 1px 边框上;
+   它上面的 .panel-header 有 14px、下面的 .review-field-scroll 有 12px,整块面板里
+   **只有这一行齐边**,读起来像掉出了容器。14px 与 panel-header 同源,三行左缘对齐。
+   竖向只加 8px(上一版是 margin-bottom:8px,净增 8px),不把 0727 省下的高度吃回去。 */
+.flow-review-bar {
+  display: block;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 8px 14px;
+  background: transparent;
+}
+
+.flow-review-status,
+.flow-review-actions,
+.review-primary-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.flow-review-status { flex-wrap: nowrap; gap: 8px; }
+/* 「待处理 N」提到最前且最重(这才是你需要知道的);done/total 降为右侧灰色小字 */
+.flow-review-status strong.flow-pending {
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex: none;
+}
+.flow-review-status .flow-done {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex: none;
+}
+
+.flow-review-actions {
+  gap: 8px;
+}
+
+.flow-review-actions button {
+  min-width: 92px;
+}
+
+.review-action-dock .flow-review-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.review-primary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.review-primary-actions button {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 进度条 3px 中性灰:它是背景信息,不该用蓝色抢「确认」的注意力 */
+.flow-review-progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+  flex: 1 1 auto;
+  min-width: 40px;
+}
+
+.flow-review-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #94a3b8;
+}
+
+.success-text {
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.inline-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.inline-form input {
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 0 10px;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.new-batch-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 14px 0;
+  padding: 14px 18px;
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-weak) 0%, #f7fbff 100%);
+}
+
+.new-batch-banner .banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.new-batch-banner .banner-text strong {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.new-batch-banner .banner-text span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.new-batch-banner .banner-cta {
+  text-decoration: none;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.dropzone {
+  border: 2px dashed var(--line-strong);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--surface-soft);
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone.active {
+  border-color: var(--accent);
+  background: var(--accent-weak);
+}
+
+.dropzone.filled {
+  text-align: left;
+  background: var(--surface);
+}
+
+.dropzone p {
+  margin: 6px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.dropzone p strong {
+  /* 硬规则「蓝只给可点击」:这是拖拽区的说明文字,点它不会有任何事。
+     染成 --accent 会让它读起来像个链接 —— 而真正能点的是它右边那个 file input。
+     强调保留(b/strong 全局 500),但颜色回到正文色。 */
+  color: var(--text);
+}
+
+.dropzone input[type="file"] {
+  margin: 6px auto;
+  display: block;
+}
+
+.file-chips {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.file-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-weak);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  max-width: 200px;
+}
+
+.file-chips li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-x {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.chip-x:hover {
+  color: var(--danger);
+}
+
+.ghost-button.small,
+.primary-button.small,
+.outline-primary.small,
+.danger-button.small {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.pending-review-panel {
+  border-left: 3px solid var(--warning);
+  background: linear-gradient(180deg, #fffbf0 0%, var(--surface) 100%);
+}
+
+.pending-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pending-list li {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.pending-image-link {
+  display: block;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+}
+
+.pending-image-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pending-meta {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.pending-meta strong {
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pending-meta .muted {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ledger-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.file-button:hover {
+  background: var(--surface-soft);
+  border-color: var(--accent);
+}
+
+.file-button.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.import-group {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: var(--surface-soft);
+}
+
+.import-group .group-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.import-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.import-row > span {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.import-row .muted {
+  font-size: 11px;
+  font-style: normal;
+}
+
+.import-advanced {
+  margin-top: 6px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #fafbfc;
+}
+
+.import-advanced > summary {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.import-advanced[open] > summary {
+  margin-bottom: 4px;
+}
+
+.customer-detail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.customer-detail div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--surface-soft);
+}
+
+.customer-detail span,
+.customer-detail strong {
+  display: block;
+}
+
+.customer-detail span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.customer-detail strong {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.image-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.image-strip a {
+  max-width: 180px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #fff;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-sync {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.review-detail-stack {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.task-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.task-summary div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--surface-soft);
+}
+
+.task-summary span,
+.task-summary strong {
+  display: block;
+}
+
+.task-summary span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.task-summary strong {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.signature-display {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 10px;
+}
+
+.signature-display-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.signature-display-box {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  background: #fff;
+  padding: 10px;
+}
+
+.signature-preview,
+.signature-name-preview {
+  display: block;
+  max-width: 100%;
+}
+
+.signature-preview {
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.signature-name-preview {
+  color: var(--text);
+  font-family: "STKaiti", "KaiTi", "SimSun", serif;
+  font-size: 28px;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.signature-display-foot {
+  display: grid;
+  gap: 4px;
+}
+
+.signature-display-foot p {
+  margin: 0;
+}
+
+.batch-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.batch-actions a {
+  display: inline-flex;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.export-result {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  /* 0729 绿删补漏:导出成功框原本整块浅绿(border #b7ddc8 / bg #f0fbf5)。
+     导出完成=正常态,不需要人处理 → 灰阶。 */
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 14px;
+  padding: 12px;
+  background: #f8fafc;
+  color: var(--success);
+}
+
+.export-result a {
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.login-screen {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-panel {
+  width: min(420px, 100%);
+}
+
+/* ================================================================
+   Design System v1.0 — shadcn-vue theme (v2 pages only)
+   Scoped under .v2-layout to prevent collision with legacy CSS vars.
+   All --background / --muted / --accent etc. here are HSL tuples
+   consumed via hsl(var(--xxx)) in v2 components.
+   ================================================================ */
+@layer base {
+  .v2-layout {
+    /* ── Core palette ── navy background, indigo accent */
+    --background:       222 47% 97%;       /* off-white page bg */
+    --foreground:       222 47% 11%;       /* deep navy text */
+
+    --card:             0 0% 100%;
+    --card-foreground:  222 47% 11%;
+
+    --popover:          0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* primary = indigo */
+    --primary:          243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+
+    /* 0731:shadcn 那两个名字**和老设计令牌撞车**。
+       根上 --accent=#1863c6、--muted=#61708a 是颜色;这里原来把同名令牌
+       重定义成 HSL 三元组「243 75% 95%」——不是合法颜色值。于是任何老组件
+       在 v2 页面里写 color: var(--accent) 都会静默回退到 currentColor,
+       同一个组件在两类页面下颜色不一样,而且没有任何报错。
+       实测:49 条规则拿这两个令牌当颜色用,今天恰好没有一条落在 v2 页面里,
+       所以是个**还没炸的雷**。加 sh- 前缀拆掉它;344 处 Tailwind 工具类
+       引用的是颜色名不是变量名,一个都不用改,只动 tailwind.config 那 4 行。 */
+    /* secondary = slate */
+    --secondary:        215 25% 92%;
+    --secondary-foreground: 222 47% 20%;
+
+    --sh-muted:            215 25% 93%;
+    --sh-muted-foreground: 215 20% 48%;
+
+    /* accent = indigo-50 bg with indigo fg */
+    --sh-accent:           243 75% 95%;
+    --sh-accent-foreground: 243 75% 35%;
+
+    --destructive:      0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border:           215 25% 87%;
+    --input:            215 25% 87%;
+    --ring:             243 75% 59%;
+
+    /* radius */
+    --radius:           0.5rem;
+
+    /* ── Sidebar (navy dark) ── */
+    --sidebar-background:        222 47% 12%;
+    --sidebar-foreground:        215 30% 88%;
+    --sidebar-primary:           243 75% 65%;
+    --sidebar-primary-foreground:0 0% 100%;
+    --sidebar-accent:            222 47% 18%;
+    --sidebar-accent-foreground: 215 30% 96%;
+    --sidebar-border:            222 47% 20%;
+    --sidebar-ring:              243 75% 59%;
+
+    /* ── Status colors ── */
+    --status-ok:    215 16% 47%;   /* 0728 硬规则:绿删,ok=灰阶 */
+    --status-warn:  38 92% 38%;    /* amber */
+    --status-error: 0 72% 51%;     /* red */
+    --status-info:  243 75% 59%;   /* indigo */
+    --status-test:  270 50% 52%;   /* violet — test/demo mode */
+  }
+}
+
+/* ================================================================
+   Legacy CSS vars remain in :root below — unchanged for old pages
+   ================================================================ */
+
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .nav-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid-metrics,
+  .form-grid,
+  .readiness-grid,
+  .split-layout,
+  .customer-detail,
+  .batch-sync,
+  .task-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .review-console-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .review-queue-panel,
+  .review-image-col,
+  .review-image-panel,
+  .review-inspector {
+    height: auto;
+    max-height: none;
+  }
+}

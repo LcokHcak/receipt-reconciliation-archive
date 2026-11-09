@@ -1,0 +1,26 @@
+# Python virtual env
+.venv/
+__pycache__/
+*.pyc
+
+# Runtime DATA — contains PII (passenger names / passport-linked PDFs / receipt images).
+# NEVER commit. Only directory structure is kept via .gitkeep.
+originals/*
+!originals/.gitkeep
+uploads/*
+!uploads/.gitkeep
+completed/*
+!completed/.gitkeep
+logs/*
+!logs/.gitkeep
+debug/*
+!debug/.gitkeep
+
+# Backups & archives
+*.bak
+*.bak_*
+*.zip
+
+# OS cruft
+Thumbs.db
+.DS_Store
